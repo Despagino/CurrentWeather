@@ -28,8 +28,8 @@ struct Coord: Codable {
 
 struct Main: Codable {
     var temp: Double
-    var tempMin: Double
-    var tempMax: Double
+    var temp_min: Double
+    var temp_max: Double
 }
 
 

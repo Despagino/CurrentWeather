@@ -19,13 +19,19 @@ class MainVC: UIViewController, CLLocationManagerDelegate {
 
     private let locationManager = CLLocationManager()
     private let weatherController = WeatherController()
+
     
-    
+    var coordinates = (myLatitude: "", myLongitude: "") {
+        didSet {
+            // to do - updateWeather
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         //TODO: - add background UI
+        self.view.addVerticalGradientLayer()
 
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -36,25 +42,38 @@ class MainVC: UIViewController, CLLocationManagerDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        if CLLocationManager.locationServicesEnabled() {
+            updateWeather(latValue: coordinates.myLatitude, lonValue: coordinates.myLongitude)
+        }
 
     }
     
     //MARK: - Weather
-    /**
-     Updates the labels with the weather details
-     - weatherInfo  this is taken from your weather info model
-
-     ## Important Note##
-     The user needs internet in order for this function to run
-     */
+    
+    
+    func updateWeather(latValue: String, lonValue: String) {
+        
+        // call our fetch func
+        weatherController.fetchWeather(lat: latValue, lon: lonValue) { [weak self] result in
+            
+            switch result {
+            case .failure(let error):
+                    print(error.localizedDescription)
+            case .success(let details):
+                    print(details)
+                self?.updateViews(weatherInfo: details)
+            }
+        }
+    }
+    
     func updateViews(weatherInfo: WeatherInfo) {
         Dispatch.DispatchQueue.main.async {
-            //            self.cityLabel.text = "City: \(weatherInfo.name)"
-            //            self.tempLabel.text = String(weatherInfo.main.temp)
-            //            self.mainDescriptionLabel.text = weatherInfo.weather.first?.main ?? "No data found"
-            //            self.subDescriptionLabel.text = weatherInfo.weather.first?.description ?? "No data found"
-            //            self.maxTempLabel.text = "Max: \(weatherInfo.main.tempMax)"
-            //            self.minTempLabel.text = "Min: \(weatherInfo.main.tempMin)"
+            self.cityLabel.text = "City: \(weatherInfo.name)"
+            self.tempLabel.text = String(weatherInfo.main[0].temp)
+            self.mainDescriptionLabel.text = weatherInfo.weather.first?.main ?? "No data found"
+            self.subDescriptionLabel.text = weatherInfo.weather.first?.description ?? "No data found"
+            self.maxTempLabel.text = "Max: \(weatherInfo.main[0].temp_max)"
+            self.minTempLabel.text = "Min: \(weatherInfo.main[0].temp_min)"
         }
     }
 
