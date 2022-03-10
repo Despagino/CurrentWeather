@@ -38,9 +38,6 @@ class MainVC: UIViewController, CLLocationManagerDelegate {
     }
     
     //MARK: - Weather
-
-
-
     /**
      Updates the labels with the weather details
      - weatherInfo  this is taken from your weather info model

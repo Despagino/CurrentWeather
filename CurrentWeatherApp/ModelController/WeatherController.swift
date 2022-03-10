@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreLocation
 
 
 struct WeatherController {
@@ -17,5 +18,26 @@ struct WeatherController {
     private let baseURL = "https://api.openweathermap.org"
 
     //MARK: - Fetch Function
+    
+    func fetchWeather(lat: String, lon: String, completion: @escaping (Result<WeatherInfo, NetworkingError>) -> Void) {
+        
+        guard let url = URL(string: baseURL) else {
+            completion(.failure(.badBaseURL))
+            return
+        }
+
+        url.appendingPathComponent("data")
+        url.appendingPathComponent("2.5")
+        url.appendingPathComponent("weather")
+        
+        var component = URLComponents(url: url, resolvingAgainstBaseURL: true)
+        
+        let latQuery = URLQueryItem(name: "lat", value: lat)
+        let lonQuery = URLQueryItem(name: "lat", value: lon)
+        let appIDQuery = URLQueryItem(name: "appid", value: apiKey)
+        let unitsQuery = URLQueryItem(name: "units", value: "imperial")
+        
+        
+    }
 
 }
