@@ -32,12 +32,50 @@ struct WeatherController {
         
         var component = URLComponents(url: url, resolvingAgainstBaseURL: true)
         
+        //adding all queries to our URL
         let latQuery = URLQueryItem(name: "lat", value: lat)
         let lonQuery = URLQueryItem(name: "lat", value: lon)
         let appIDQuery = URLQueryItem(name: "appid", value: apiKey)
         let unitsQuery = URLQueryItem(name: "units", value: "imperial")
         
+        //appending queries to the compoenent
+        component?.queryItems = [latQuery, lonQuery, appIDQuery, unitsQuery]
         
+        guard let finalURL = component?.url else {
+            completion(.failure(.badBuiltURL))
+            return
+        }
+        
+        // URLSession
+        URLSession.shared.dataTask(with: finalURL) { data, response, error in
+            
+            if let error = error {
+                print(error)
+                completion(.failure(.errorWithRequest))
+                return
+            }
+            
+            //response
+            
+            guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
+                completion(.failure(.invalidResponse))
+                return
+            }
+            
+            //data
+            
+            guard let data = data else {
+                    completion(.failure(.invalidData))
+                    return
+                }
+            
+            do {
+                let weatherObject = try JSONDecoder().decode(WeatherInfo.self, from: data)
+                completion(.success(weatherObject))
+            } catch let error {
+                print(error)
+                completion(.failure(.errorWithRequest))
+            }
+        }.resume()
     }
-
 }

@@ -18,7 +18,9 @@ class MainVC: UIViewController, CLLocationManagerDelegate {
     @IBOutlet weak var maxTempLabel: UILabel!
 
     private let locationManager = CLLocationManager()
-
+    private let weatherController = WeatherController()
+    
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
